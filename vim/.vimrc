@@ -1,3 +1,22 @@
+" vundle settings
+set nocompatible              " be iMproved, required
+filetype off                  " required
+
+" set the runtime path to include Vundle and initialize
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+" alternatively, pass a path where Vundle should install plugins
+"call vundle#begin('~/some/path/here')
+
+" let Vundle manage Vundle, required
+Plugin 'VundleVim/Vundle.vim'
+
+Plugin 'majutsushi/tagbar'
+Plugin 'scrooloose/nerdtree'
+
+" All of your Plugins must be added before the following line
+call vundle#end()            " required
+filetype plugin indent on    " required
 " some usefull settings
 filetype on
 syntax on
@@ -41,7 +60,8 @@ nnoremap gf <C-W>gf
 vnoremap gf <C-W>gf
 inoremap <C-u> <esc>gUiwea
 
-nnoremap <silent> <F4> :TlistToggle<CR>
+nnoremap <silent> <F4> :TagbarToggle<CR>
+nnoremap <silent> <F5> :NERDTreeToggle<CR>
 
 " close bell
 set vb t_vb=
@@ -127,15 +147,7 @@ func SetTitle()
 endfunc
 """"""""""""""""""""""""""""""""""end newfile""""""""""""""""""""""""""""""""""""""""
 
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " CTags settings
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let Tlist_Sort_Type = "name" 
-set tags=tags;/
-
-let Tlist_Auto_Open=1
-let Tlist_Ctags_Cmd = '/usr/bin/ctags'
-let Tlist_Show_One_File = 1
-let Tlist_Exit_OnlyWindow = 1 
-
+let g:tagbar_ctags_bin = 'ctags'
+let g:tagbar_left = 1
+let g:tagbar_width = 30
