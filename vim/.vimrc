@@ -11,14 +11,35 @@ call vundle#begin()
 " let Vundle manage Vundle, required
 Plugin 'VundleVim/Vundle.vim'
 
+" Plugin 'Valloric/YouCompleteMe'
+" Plugin 'scrooloose/syntastic'
+" Plugin 'bling/vim-airline'
+Plugin 'SirVer/ultisnips'
+" Plugin 'edsono/vim-matchit'
+" Plugin 'elzr/vim-json'
+Plugin 'honza/vim-snippets'
+" Plugin 'justinmk/vim-sneak'
+Plugin 'kien/ctrlp.vim'
+" Plugin 'ludovicchabant/vim-lawrencium'
 Plugin 'majutsushi/tagbar'
+Plugin 'mhinz/vim-signify'
+Plugin 'plasticboy/vim-markdown'
+Plugin 'scrooloose/nerdcommenter'
+Plugin 'sjl/gundo.vim'
+Plugin 'tpope/vim-fugitive'
+" Plugin 'tpope/vim-sleuth'
+Plugin 'tpope/vim-surround'
+" Plugin 'tyru/open-browser.vim'
+" Plugin 'vim-scripts/a.vim'
 Plugin 'scrooloose/nerdtree'
+
+" Color schemes
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
 filetype plugin indent on    " required
+
 " some usefull settings
-filetype on
 syntax on
 
 set number
@@ -151,3 +172,40 @@ endfunc
 let g:tagbar_ctags_bin = 'ctags'
 let g:tagbar_left = 1
 let g:tagbar_width = 30
+
+" nerdtree settings
+let g:NERDTreeDirArrowExpandable = '+'
+let g:NERDTreeDirArrowCollapsible = '-'
+let g:NERDTreeWinPos='left'
+let g:NERDTreeSize=30
+let g:NERDTreeShowLineNumbers=1
+
+" CtrlP settings
+let g:ctrlp_map = '<leader>p'
+let g:ctrlp_cmd = 'CtrlP'
+map <leader>f :CtrlPMRU<CR>
+let g:ctrlp_custom_ignore = {
+    \ 'dir':  '\v[\/]\.(git|hg|svn|rvm)$',
+    \ 'file': '\v\.(exe|so|dll|zip|tar|tar.gz|pyc)$',
+    \ }
+let g:ctrlp_working_path_mode=0
+let g:ctrlp_match_window_bottom=1
+let g:ctrlp_max_height=15
+let g:ctrlp_match_window_reversed=0
+let g:ctrlp_mruf_max=500
+let g:ctrlp_follow_symlinks=1
+
+" NerdComment settings
+let g:NERDSpaceDelims=1
+
+" Gundo settings
+nnoremap <leader>h :GundoToggle<CR>
+
+" Snips settings
+" Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<c-b>"
+let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+
+" If you want :UltiSnipsEdit to split your window.
+let g:UltiSnipsEditSplit="vertical"
