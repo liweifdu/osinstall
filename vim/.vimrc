@@ -19,16 +19,16 @@ Plugin 'SirVer/ultisnips'
 " Plugin 'elzr/vim-json'
 Plugin 'honza/vim-snippets'
 " Plugin 'justinmk/vim-sneak'
-Plugin 'kien/ctrlp.vim'
+" Plugin 'kien/ctrlp.vim'
 " Plugin 'ludovicchabant/vim-lawrencium'
 Plugin 'majutsushi/tagbar'
 Plugin 'mhinz/vim-signify'
 Plugin 'plasticboy/vim-markdown'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'sjl/gundo.vim'
-Plugin 'tpope/vim-fugitive'
+" Plugin 'tpope/vim-fugitive'
 " Plugin 'tpope/vim-sleuth'
-Plugin 'tpope/vim-surround'
+" Plugin 'tpope/vim-surround'
 " Plugin 'tyru/open-browser.vim'
 " Plugin 'vim-scripts/a.vim'
 Plugin 'scrooloose/nerdtree'
@@ -174,25 +174,25 @@ let g:NERDTreeSize=30
 let g:NERDTreeShowLineNumbers=1
 
 " CtrlP settings
-let g:ctrlp_map = '<leader>p'
-let g:ctrlp_cmd = 'CtrlP'
-map <leader>f :CtrlPMRU<CR>
-let g:ctrlp_custom_ignore = {
-    \ 'dir':  '\v[\/]\.(git|hg|svn|rvm)$',
-    \ 'file': '\v\.(exe|so|dll|zip|tar|tar.gz|pyc)$',
-    \ }
-let g:ctrlp_working_path_mode=0
-let g:ctrlp_match_window_bottom=1
-let g:ctrlp_max_height=15
-let g:ctrlp_match_window_reversed=0
-let g:ctrlp_mruf_max=500
-let g:ctrlp_follow_symlinks=1
+" let g:ctrlp_map = '<leader>p'
+" let g:ctrlp_cmd = 'CtrlP'
+" map <leader>f :CtrlPMRU<CR>
+" let g:ctrlp_custom_ignore = {
+"     \ 'dir':  '\v[\/]\.(git|hg|svn|rvm)$',
+"     \ 'file': '\v\.(exe|so|dll|zip|tar|tar.gz|pyc)$',
+"     \ }
+" let g:ctrlp_working_path_mode=0
+" let g:ctrlp_match_window_bottom=1
+" let g:ctrlp_max_height=15
+" let g:ctrlp_match_window_reversed=0
+" let g:ctrlp_mruf_max=500
+" let g:ctrlp_follow_symlinks=1
 
 " NerdComment settings
 let g:NERDSpaceDelims=1
 
 " Gundo settings
-nnoremap <leader>h :GundoToggle<CR>
+" nnoremap <leader>h :GundoToggle<CR>
 
 " Snips settings
 " Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
