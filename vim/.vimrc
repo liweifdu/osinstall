@@ -70,8 +70,8 @@ set ruler
 " map the keyboard
 map <C-A> ggVG
 map <F12> gg=G
-map <F2> :tabnew
-map <F3> :left
+nnoremap <silent> <F2> :TagbarToggle<CR>
+nnoremap <silent> <F3> :NERDTreeToggle<CR>
 
 " vmap the keyboard
 vmap <C-c> "+y
@@ -80,9 +80,6 @@ vmap <C-c> "+y
 nnoremap gf <C-W>gf
 vnoremap gf <C-W>gf
 inoremap <C-u> <esc>gUiwea
-
-nnoremap <silent> <F4> :TagbarToggle<CR>
-nnoremap <silent> <F5> :NERDTreeToggle<CR>
 
 " close bell
 set vb t_vb=
@@ -93,8 +90,6 @@ set completeopt=preview,menu
 set clipboard+=unnamed
 
 " auto completement
-autocmd BufRead,BufNewFile *.cpp iabbrev for for (int i = 0; i < ; ++i) {!cursor!<Enter>}<Esc>:call search('!cursor!','b')<CR>cf!
-autocmd BufRead,BufNewFile *.v iabbrev begin begin!cursor!<Enter>end<Esc>:call search('!cursor!','b')<CR>cf!
 autocmd BufRead,BufNewFile *.v iabbrev alw always @(posedge clk or negedge rstn) begin<Enter>  if(!rstn) begin<Enter>end<Enter>else begin<Enter>end<Enter>end<Esc>:call search('!cursor!','b')<CR>cf!
 
 " fold settings
@@ -106,8 +101,6 @@ set foldenable
 " cursor
 set cursorline
 set cursorcolumn
-
-" colorscheme blayu
 
 """""""""""""""""""""""""""""""""new file""""""""""""""""""""""""""""""""""""""""""""
 """"""""""""""""""""""""""""""""some information"""""""""""""""""""""""""""""""""""""
