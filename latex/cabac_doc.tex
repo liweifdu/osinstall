@@ -1,0 +1,499 @@
+%保存为UTF-8编码格式
+%用xelatex编译
+ 
+\documentclass[UTF8,a4paper,12pt]{ctexart}
+\usepackage[left=2.50cm, right=2.50cm, top=2.50cm, bottom=2.50cm]{geometry} %页边距
+\CTEXsetup[format={\Large\bfseries}]{section} %设置章标题字号为Large，居左
+%\CTEXsetup[number={\chinese{section}}]{section}
+%\CTEXsetup[name={（,）}]{subsection}
+%\CTEXsetup[number={\chinese{subsection}}]{subsection}
+%\CTEXsetup[name={（,）}]{subsubsection}
+%\CTEXsetup[number=\arabic{subsubsection}]{subsubsection}  %以上四行为各级标题样式设置，可根据需要做修改
+ 
+%\linespread{1.5} %设置全文行间距
+ 
+ 
+%\usepackage[english]{babel}
+%\usepackage{float}     %放弃美学排版图表
+\usepackage{fontspec}   %修改字体
+\usepackage{amsmath, amsfonts, amssymb} % 数学公式相关宏包
+\usepackage{color}      % color content
+\usepackage{graphicx}   % 导入图片
+\usepackage{subfigure}  % 并排子图
+\usepackage{url}        % 超链接
+\usepackage{bm}         % 加粗部分公式，比如\bm{aaa}aaa
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage{epstopdf}
+\usepackage{epsfig}
+\usepackage{longtable}  %长表格
+\usepackage{supertabular}%跨页表格
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{changepage}
+\usepackage{enumitem}
+\usepackage{multirow}
+ 
+ 
+%%%%%%%%%%%%%%%%%%%%%%%
+% -- text font --
+% compile using Xelatex
+%%%%%%%%%%%%%%%%%%%%%%%
+% -- 中文字体 --
+%\setCJKmainfont{Microsoft YaHei}  % 微软雅黑
+%\setCJKmainfont{YouYuan}  % 幼圆
+%\setCJKmainfont{NSimSun}  % 新宋体
+%\setCJKmainfont{KaiTi}    % 楷体
+\setCJKmainfont{SimSun}   % 宋体
+%\setCJKmainfont{SimHei}   % 黑体
+ 
+% -- 英文字体 --
+\setmainfont{Times New Roman}
+%\setmainfont{DejaVu Sans}
+%\setmainfont{Latin Modern Mono}
+%\setmainfont{Consolas}
+%
+%
+\renewcommand{\algorithmicrequire}{ \textbf{Input:}}     % use Input in the format of Algorithm
+\renewcommand{\algorithmicensure}{ \textbf{Initialize:}} % use Initialize in the format of Algorithm
+\renewcommand{\algorithmicreturn}{ \textbf{Output:}}     % use Output in the format of Algorithm
+\renewcommand{\abstractname}{\textbf{\large {简\quad 介}}} %更改摘要二字的样式
+\newcommand{\xiaosi}{\fontsize{12pt}{\baselineskip}}     %\xiaosi代替设置12pt字号命令,不加\selectfont,行间距设置无效
+\newcommand{\wuhao}{\fontsize{10.5pt}{10.5pt}\selectfont}
+ 
+\usepackage{fancyhdr} %设置全文页眉、页脚的格式
+\pagestyle{fancy}
+\lhead{}           %页眉左边设为空
+\chead{}           %页眉中间
+\rhead{}           %页眉右边
+%\rhead{\includegraphics[width=1.2cm]{1.eps}}  %页眉右侧放置logo
+\lfoot{}          %页脚左边
+\cfoot{\thepage}  %页脚中间
+\rfoot{}          %页脚右边
+ 
+ 
+%%%%%%%%%%%%%%%%%%%%%%%
+%  设置水印
+%%%%%%%%%%%%%%%%%%%%%%%
+%\usepackage{draftwatermark}         % 所有页加水印
+%\usepackage[firstpage]{draftwatermark} % 只有第一页加水印
+% \SetWatermarkText{Water-Mark}           % 设置水印内容
+% \SetWatermarkText{\includegraphics{fig/ZJDX-WaterMark.eps}}         % 设置水印logo
+% \SetWatermarkLightness{0.9}             % 设置水印透明度 0-1
+% \SetWatermarkScale{1}                   % 设置水印大小 0-1
+ 
+\usepackage{hyperref} %bookmarks
+\hypersetup{colorlinks, bookmarks, unicode} %unicode
+ 
+ 
+ 
+\title{\textbf{\Large{CABAC软硬件代码介绍}}}
+\author{ 李威\thanks{based on svn364} }
+\date{\today}
+ 
+ 
+ 
+\begin{document}
+ 
+\maketitle
+%\tableofcontents
+ 
+\begin{abstract}
+f265 4th 迭代版本中，cabac软件已经可以支持32x32和64x64大小的CTU编码，编码过程基于迭代编码CU，迭代方式为4叉树结构，z字扫描的方式，整个CABAC编码流程参考自标准文档7.3节\cite{ref1}。注意：标准中首先需要编码一些头信息，代码里放在bs.cpp中，因此cabac的部分实际上可以参考标准文档中7.3.8.3节开始。
+
+整个过程总结如下：
+\begin{itemize}[itemindent=25pt]
+\item [1)] 拿到CTU数据
+\item [2)] 编码SAO信息
+\item [3)] 当前大小CTU是否划分为4个子块
+\item [4)] 进入子块或者当前块进行编码
+\item [5)] 回到第3步迭代直至整个块编码完成
+\end{itemize}
+
+软件代码中，CABAC部分有4个cpp文件，分别是$cabac.cpp$,$cabac\_context.cpp$, \\
+$cabac\_dump.cpp$,$cabac\_encode.cpp$，文档接下来将详细介绍各个部分的作用。
+
+
+\end{abstract}
+ 
+%\begin{center}
+%\large{\textbf{Abstract}}
+%\end{center}
+ 
+%\begin{adjustwidth}{1cm}{1cm}
+%\hspace{1.5em}Here is the first par. of abstract.Here is the first par. of abstract.Here is the first par. of abstract.Here is the first par. of abstract.Here is the first par. of abstract.Here is the first par. of abstract.Here is the first par. of abstract.Here is the first par. of abstract.Here is the first par. of abstract.Here is the first par. of abstract.Here is the first par. of abstract.
+ 
+%\noindent\hspace{1.5em}Here is the second par. of abstract.Here is the second par. of abstract.Here is the second par. of abstract.Here is the second par. of abstract.Here is the second par. of abstract.Here is the second par. of abstract.Here is the second par. of abstract.Here is the second par. of abstract.
+%\end{adjustwidth}
+ 
+\thispagestyle{empty}       %本页不显示页码
+\newpage                    %分页
+\tableofcontents\thispagestyle{empty}
+\newpage
+\setcounter{page}{1}        %从下面开始编页，页脚格式为导言部分设置的格式
+ 
+ 
+\section{$cabac.cpp$代码分析}
+$cabac.cpp$相当于cabac编码的顶层,软件中在$sys\_ctrl.cpp$调用这一部分启动cabac,实现了从数据载入到码流输出的功能,封装于$cabac\_proc$,$cabac\_proc$调用函数及主要功能如表\ref{tab1}所示
+\begin{table}[H] \wuhao             %局部字体设置大小
+   \centering
+  \caption{$cabac\_proc$调用函数}\label{tab1}
+  \begin{tabular}{c|c}
+    \toprule                  %设置为顶线默认格式 加粗
+    % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+    函数 & 说明 \\
+    \hline                  %普通横线
+    $init$ & cabac初始化,每一帧init一次 \\
+    $load$ & 载入待编码数据,每个CTU载入一次 \\
+    $run$ & 处理载入的数据 \\
+    $dump$ & 所有dump数据的代码都放在这里面 \\
+    $update$ & 输出码流数据 \\
+    \bottomrule                %设置为底线默认格式
+  \end{tabular}
+\end{table}
+
+\subsection{init函数}
+目前版本init部分完全无用,可以删除,实际上cabac的初始化挪到了别的地方
+
+\subsection{load函数}
+load函数载入所有数据,每个CTU load一次,load内容包括$paramInput$,$dbRecOut$, \\
+$dbSaoOut$. paramInput传进来的是$f265、_encode.cfg$的一些参数,以及当前CTU的坐标信息.dbRecOut传进来的是预测信息与残差信息,包含CABAC中$90\%$需要编码的数据.dbSaoOut传进来的是SAO模块的待编码数据,包含做SAO的模式,参数等等.
+
+函数流程如图\ref{fig1}所示
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{figure/load.pdf}
+\caption{load流程}\label{fig1}
+\end{figure}
+
+其中，边界判定条件相关变量为$m\_*Boundary$，从文件载入数据函数用的是LoadFromFile，从pipeline载入数据函数是LoadFromPipeline，载入数据流程为图\ref{fig2}，这些数据最终需要转换为标准中一个个语法元素进行编码，语法元素就是标准7.3节的处理伪代码中的加粗字体。
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.8]{figure/loadFromPipeLine.pdf}
+\caption{load数据}\label{fig2}
+\end{figure}
+
+\subsection{run函数}
+run函数是将load进来的数据处理成一个个语法元素（syntax element）并编码的主要函数，每个CTU执行一次，函数主要进行以下几个步骤
+\begin{itemize}[itemindent=25pt]
+\item [1)] init一些CACHE，只在一帧的最开始重置cache
+\item [2)] 清空,restore码流输出的buffer($m\_bsBuf$)
+\item [3)] 初始化上下文(cabaccontextinit，一帧初始化一次，算出各种语法元素的初始概率state值)
+\item [4)] 编码SAO信息(f26cabacencodesao)
+\item [5)] 迭代编码CTU(f265cabacencodelcu)
+\item [6)] 编码结束标志(f265cabacencodecufinish)
+\end{itemize}
+除掉一些无关的memset以及init函数，这一部分需要注意的编码函数有编码SAO信息的f265encdesao和编码CTU的f265encodelcu函数，以及最后的f265cabacencodecufinish函数
+
+\subsubsection{f265CabacEncodeSao函数}
+此函数编码SAO的信息，首先SAO模块给到这里的数据需要转化为语法元素,此部分需要的语法元素有以下几种，由$SAO\_TYPE$的不同（分为EO以及BO两种模式，merge表示采用相邻块的SAO模式），这里需要编的语法元素也不同。
+\begin{itemize}[itemindent=25pt]
+\item [*)] $sao\_merge\_left\_flag$
+\item [*)] $sao\_merge\_up\_flag$
+\item [*)] $sao\_type\_idx\_luma/chroma$
+\item [*)] $sao\_offset\_abs$
+\item [*)] $sao\_offset\_sign$
+\item [*)] $sao\_band\_position/sao\_eo\_class\_chroma$
+\end{itemize}
+具体每个语法元素的编码模式，及其所代表的含义，在标准中直接搜索同名变量即可找得到，这里不再赘述。
+
+\subsubsection{f265CabacEncodeLCU函数}
+这里是编码其他$90\%$的语法元素的入口,采用了迭代循环调用的方式,直到整个CTU编码结束.其循环调用流程如图\ref{fig3}所示,递归的最终会进入f265CabacEncodeCu函数接着进行编码.
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.8]{figure/iteration.pdf}
+\caption{迭代过程}\label{fig3}
+\end{figure}
+
+\subsubsection{f265CabacEncodeCuFinish函数}
+当一个CTU结束时,我们需要编一个结束标志,编码方式采用terminal方式,如果当前CTU不是一帧图像中的最后一个CTU,则只编一个terminal 模式的0,如果当前CTU是一帧图像中的最后一个CTU,那么以terminal 方式编一个1,最后将buffer里面补1凑齐1个Byte全部输出.因此这个函数调用的子函数有如下几个
+\begin{itemize}[itemindent=25pt]
+\item [*)] $f265CabacEncodeTerminal$
+\item [*)] $f265CabacEncodeFinish$
+\item [*)] $bs\_write$
+\item [*)] $bs\_align\_0$
+\end{itemize}
+
+\subsection{dump函数}
+dump函数专门用与导出一些数据,或用于对比cross\_check,或用于硬件仿真,这一版本里面只有一个用于硬件仿真的dump函数,调用的cabacHwSimDump,实际上所做的事情就是把CABAC load的数据给导出来灌到硬件里面去.
+
+\subsection{update函数}
+这一部分做了两件事情,第一件将buffer里面的码流数据全部写出去,即 \\
+m\_cabacOutput.bs\_buf\_pt.*被赋值.第二件事是把当前CTU的一些数据给存下来,用于下一个CTU作为相邻信息参考.(编码依赖相邻块的某些信息),涉及到的相邻信息如表\ref{tab2}所示,调用的函数是f265CabacInitCacheLine.
+\begin{table}[H] \wuhao             %局部字体设置大小
+   \centering
+  \caption{update相邻信息}\label{tab2}
+  \begin{tabular}{c|c}
+    \toprule                  %设置为顶线默认格式 加粗
+    % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+    函数 & 说明 \\
+    \hline                  %普通横线
+    $depth\_left$ & CTU右边的划分信息 \\
+    $depth\_top$ & CTU下边的划分信息 \\
+    $skip\_left$ & CTU右边的skip模式信息 \\
+    $skip\_left$ & CTU下边的skip模式信息 \\
+    $intra\_luma\_mode\_left$ & CTU右边的帧内亮度预测模式信息 \\
+    \bottomrule                %设置为底线默认格式
+  \end{tabular}
+\end{table}
+
+\subsection{$cabac.cpp$所有函数调用关系图}
+这里给出了cabac\.cpp里面所有函数之间的调用关系,如图\ref{fig4}所示.注意,浅蓝色表示不重要,红色表示重要,越红表示越重要,是硬件中需要写到的部分,f265CabacEncodeCu函数非常重要,函数位于第二个cpp文件中,这里也作为第二个cpp文件的起点,置于文档的第二部分.
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.8]{figure/cabacCpp.pdf}
+\caption{cabac.cpp所有函数}\label{fig4}
+\end{figure}
+ 
+\section{$cabac\_encode.cpp$代码分析}
+这一部分代码很长,需要以f265CabacEncodeCu函数为入口看此部分的代码.注意,标准第7章定死了各个语法元素前后的编码顺序,因此这一部分的代码逻辑基本上与标准文档一致,基本的编码流程是CU->PU->TU,其中,CU的编码过程在f265CabacEncodeCu函数实现,PU的编码过程在以上函数的子函数INTRA:f265CabacEncodeIntraDirectionLuma \\
+/chroma,INTER:f265CabacEncodeInterMv中进行,TU的编码过程在f265CabacEncodeCoeff函数中实现.需要注意如下几个变量,代码中几乎遍布,分别是
+\begin{itemize}[itemindent=25pt]
+\item [1)] cuPartIdx,范围0-85,代表了从64x64到8x8每个CU的索引值
+\item [2)] cb, code block,结构体里面有所有待编码数据
+\item [3)] cuDepth, 0:64x64,1:32x32,2:16x16,3:8x8,4:4x4
+\item [4)] predMode, INTRA\_TYPE,INTER\_TYPE
+\end{itemize}
+为了方便理解,这里先给出f265CabacEncodeCu函数实现的功能的框图如图\ref{fig5}所示
+\begin{figure}[H]
+\centering
+\includegraphics{figure/encodeFlow.pdf}
+\caption{f265CabacEncodeCu编码流程}\label{fig5}
+\end{figure}
+对应到代码部分如图\ref{fig6}所示.
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.7]{figure/encodeCu.pdf}
+\caption{f265CabacEncodeCu所有函数}\label{fig6}
+\end{figure}
+
+\subsection{CU部分}
+CU部分的编码由图\ref{fig6}可知,主要包含以下几个函数,其分别编码的语法元素至于表\ref{tab3}中,流程与标准文档一一对应.注意：对于INTRA类型的块来说，这一部分只需要编划分模式即可，即对应part\_mode语法元素，而INTER需要考虑的东西比较多，详情请参考标准。
+\begin{table}[H]
+	\centering
+	\caption{CU部分函数以及他们编码的语法元素}\label{tab3}
+	\begin{tabular}{c|c|c}
+	\toprule
+	type & function & syntaxElements \\
+	\hline
+	\multirow{3}*{INTER} & f265CabacEncodeSkipFlag & $cu\_skip\_flag$ \\
+	~ & f265CabacEncodeMergeIdx & $merge\_idx$ \\
+	~ & f265CabacEncodePredMode & $pred\_mode\_flag$ \\
+	\hline
+	INTRAINTER & f265CabacEncodePartSize & $part\_mode$ \\
+	\bottomrule
+	\end{tabular}
+\end{table}
+ 
+\subsection{PU部分}
+PU部分同样分为INTRA块与INTER块两种情况，各自需要编码的预测信息不一样。涉及的函数以及语法元素如表\ref{tab4}所示。
+\begin{table}[H]
+	\centering
+	\caption{PU部分函数以及他们编码的语法元素}\label{tab4}
+	\scalebox{0.8}{
+	\begin{tabular}{c|c|c|c}
+	\toprule
+	type & function & subfunction & syntaxElements \\
+	\hline
+	\multirow{4}*{INTRA} & \multirow{3}*{f265CabacEncodeIntraDirectionLuma} & - & $prev\_intra\_luma\_pred\_flag$ \\
+	~ & ~ & - & $mpm\_idx$ \\
+	~ & ~ & - & $rem\_intra\_luma\_pred\_mode$ \\
+	\cline{2-3}
+	~ & f265CabacEncodeIntraDirectionChroma & - & $intra\_chroma\_pred\_mode$ \\
+	\hline
+	\multirow{7}*{INTER} & \multirow{7}*{f265CabacEncodeInterMv} & - & $merge\_flag$ \\
+	~ & ~ & - & $merge\_idx$ \\
+	\cline{3-4}
+	~ & ~ & \multirow{4}*{f265CabacEncodeInterMvd} & $abs\_mvd\_greater0\_flag$ \\
+	~ & ~ & ~ & $abs\_mvd\_greater1\_flag$ \\
+	~ & ~ & ~ & $abs\_mvd\_minus2$ \\
+	~ & ~ & ~ & $mvd\_sign\_flag$ \\
+	\cline{3-4}
+	~ & ~ & f265CabacEncodeInterMvpIdx & $mvp\_l0\_flag$ \\
+	\bottomrule
+	\end{tabular}}
+\end{table}
+需要注意的是,f265CabacEncodeInterMv函数调用了f265CabacEncodeInterMvd与f265CabacEncodeInterMvpIdx两个子函数才把这一部分的语法元素给编完.
+
+\subsection{TU部分}
+TU部分的编码只调用了f265CabacEncodeCoeff函数,TU部分的编码是CABAC整个编码流程中占用时间最久的一部分,由于这一部分的数据量非常的大.因此在硬件设计中可以优化这一部分的代码得到更高的性能.这一部分流程十分复杂,因此单独作图流程图如图\ref{fig7}所示,其中的每一步骤都有编号,对应编号下的函数代码位置附在图示之后.这样每一步的作用会比较清晰
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.95]{figure/encodeTU.pdf}
+\caption{f265CabacEncodeCoeff所有函数}\label{fig7}
+\end{figure}
+对应调用的函数如下,注意编码y,u,v的残差系数用的函数是同一个
+\begin{itemize}[itemindent=25pt]
+\item [1)] f265CabacEncodeDecision(subdiv)
+\item [2)] f265CabacEncodeDQp
+\item [3)] f265CabacEncodeNxNCoeff
+\item [4)] f265CabacEncodeNxNCoeff
+\end{itemize}
+调用关系如下:f265CabacEncodeCoeff -> 判断是否"INTER \&\& QtRootCbf" -> f265CabacEncodeTransform -> f265CabacEncodeNxNCoeff,注意红色代表函数，加粗代表语法元素，蓝色表示不重要。
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.7]{figure/encodeCoeff.pdf}
+\caption{f265CabacEncodeCoeff函数与语法元素图}\label{fig8}
+\end{figure}
+
+
+\section{$cabac\_context.cpp$}
+这一部分列出了标准规定的所有语法元素的上下文初始表格，全部存在$static const$类型的数组里面,这些表格将在上下文初始化的过程使用.
+初始化函数为f265CabacContextInit,传入参数qp,结合$static const$类型的初始话表格,调用函数f265CabacStateCal计算得到初始化的概率state值存于全局私有变量数组中去.函数f265CabacStateCal计算过程参考标准\cite{ref1}的$9.3.2.2$小节.
+这一部分剩下的函数都是与索引方式,相邻块信息,cache的初始化等操作有关.这些信息将会用作参考得到上下文索引.
+
+\section{硬件代码分析}
+注意：硬件中一些变量全局含义相同，这里给出注释:
+\begin{itemize}[itemindent=25pt]
+\item [1)] se\_: \{value, cmax, ctxidx\}
+\item [2)] bin\_: \{symbol, ctxidx\}
+\item [3)] bin\_: \{lpsmps, ctx\}
+\end{itemize}
+
+
+
+硬件所有模块的层次关系如图\ref{fig9}所示.各个部分的功能以及对应的软件代码将在后文详细介绍.对应的大致结构图如图\ref{fig13}所示。
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{figure/hwtop.pdf}
+\caption{cabac硬件模块层次关系}\label{fig9}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{figure/architecture.pdf}
+\caption{cabac整体框架}\label{fig13}
+\end{figure}
+
+为了与代码一一对应，这里给出了各个模块的详细结构如图\ref{fig14}所示，注意，每个模块的命名与代码文件module名一一对应，因此，各个模块的作用可以由此图快速预览。
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{figure/architecturedetail.pdf}
+\caption{顶层模块详细结构}\label{fig14}
+\end{figure}
+因为篇幅原因，有些模块结构没有详细画出，包括$cabac\_se\_prepare$,$cabac\_bina$,$cabac\_ucontext$，在下文中将会给出详细结构
+
+\subsection{$cabac\_se\_prepare$模块}
+此模块对应软件代码的run函数.软件中这一部分包括上下文初始化f265CabacContextInit，f265CabacEncodeSao，f265CabacEncodeLcu，f265CabacEncodeCuFinish。其中f265CabacEncodeLcu是迭代循环调用自己,硬件中对应状态机,状态跳转如图\ref{fig10}所示
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{figure/fsm.pdf}
+\caption{状态跳转图}\label{fig10}
+\end{figure}
+注意：CU64，CU32，CU16，CU8这几个状态做的事情即对应$cabac\_se\_prepare\_cu$模块,软件中对应f265CabacEncodeCu函数，$cabac\_ram\_sp\_64x16$这块memory用于存放位于当前CTU的上方CTU的信息.至于CUT的左方CTU的信息用regester存放即可,不需要memory.SAO状态即对应软件f265CabacEncodeSao函数, 涉及到的模块是$cabac\_se\_prepare\_sao\_offset$,接下来重点介绍$cabac\_se\_prepare\_cu$模块
+
+\subsubsection{$cabac\_se\_prepare\_cu$}
+前文提到,这一模块对应f265CabacEncodeCu函数.故这一模块主要处理CU->PU->TU过程,准备$cu\_syntax\_element$输出.分别对应$cabac\_se\_prepare\_intra$, \\
+$cabac\_se\_prepare\_mv$和$cabac\_se\_prepare\_tu$几个子模块,各个模块以及其子模块所做的事情对应软件的函数如表\ref{tab5}所示.
+\begin{table}[H] \wuhao             %局部字体设置大小
+   \centering
+  \caption{软硬件对应关系}\label{tab5}
+  \begin{tabular}{c|c}
+    \toprule                  %设置为顶线默认格式 加粗
+    % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+    硬件模块名 & 软件函数名 \\
+    \hline                  %普通横线
+    $cabac\_se\_prepare$ & run \\
+    $cabac\_se\_prepare\_sao\_offset$ & f265CabacEncodeSao \\
+    $cabac\_se\_prpare\_cu$ & f265CabacEncodeCu \\
+    $cabac\_ram\_sp\_64x16$ & 相邻块的信息 \\
+    $cabac\_se\_prpare\_intra$ & f265CabacEncodeIntraDirectionLuma \\
+    $cabac\_se\_prpare\_mv$ & f265CabacEncodeInterMv \\
+    $cabac\_se\_prpare\_tu$ & f265CabacEncodeCoeff \\
+    \bottomrule                %设置为底线默认格式
+  \end{tabular}
+\end{table}
+注意：由于硬件写法和软件不同，因此以上对应关系可能不是完全对应，但是逻辑上是一致的。
+
+\subsubsection{$cabac\_se\_prpare\_tu$}
+这一模块对应f265CabacEncodeCoeff函数，属于相当复杂的模块，因此单独介绍。由软件可知,这一部分要编QtRootCbf,cbfy,cbfu,cbfv,csbf,$last\_sig\_x/y\_position$, \\
+$coeff\_abs\_level\_greater0/1\_flag$,等等大量语法元素,因此硬件这里单独写了个状态机应对比较复杂的判断条件。并且调用子模块如表\ref{tab6}所示.
+\begin{table}[H] \wuhao             %局部字体设置大小
+   \centering
+  \caption{软硬件对应关系}\label{tab6}
+  \begin{tabular}{c|c}
+    \toprule                  %设置为顶线默认格式 加粗
+    % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+    硬件模块名 & 软件函数名 \\
+    \hline                  %普通横线
+    $cabac\_se\_prepare\_coeff$ & f265CabacEncodeNxNCoeff \\
+    $cabac\_se\_prepare\_tu$的其它部分 & f265CabacEncodeTransform \\
+    $cabac\_se\_prepare\_coeff\_last\_sig\_xy$ & f265CabacEncodeNxNCoeff的子函数f265CabacEncodeLastSignificantXY\\
+    $cabac\_se\_prepare\_amplitude\_of\_coeff$ & f265CabacEncodeNxNCoeff剩余部分 \\
+    \bottomrule                %设置为底线默认格式
+  \end{tabular}
+\end{table}
+
+\subsubsection{输出格式}
+之前的硬件架构图中可知，$se\_prepare$的作用是输出语法元素给接下来的binarization模块进行二值化，而二值化的硬件结构如图\ref{fig11}所示四个语法元素一组的格式输入的因此这一部分的输出格式如图\ref{fig12}所示。
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.35]{figure/binary.pdf}
+\caption{二值化模块架构}\label{fig11}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=1]{figure/syntaxElement.pdf}
+\caption{$cabac\_se\_prepare$的输出}\label{fig12}
+\end{figure}
+
+\subsection{pipo模块}
+因为数据比较集中时后边处理不过来,因此这里放了一个fifo缓冲前面送过来的syntaxElement.
+
+\subsection{$cabac\_bina$模块}
+这一部分把前一级产生的语法元素全部二值化为二进制,并且在预分配的上下文的索引的基础上得到每个二进制0/1的准确的上下文.这里一个cycle最多输出18个二值化后的数,若是当前cycle进来的四个数据二值化后超过18个数,那么就会反压前一级的buffer.架构图图\ref{fig11}已经给出,这里不再重复,这一部分的输出格式为$\{1'bx,9'bx\_xxxx_xxxx\}$,一个是待处理的bin,一个是9位待处理bin的上下文索引.
+
+\subsection{$cabac\_ucontext$模块}
+这一部分接受前面将旁路模式以及常规模式分离后的常规模式的待处理字符。同样是4路并行，架构框图如图\ref{fig15}所示，实际代码对应的具体结构如图\ref{fig16}所示。最终输出4个更新好上下文的数据用于BAE进行处理。
+\begin{figure}[H]
+\centering
+\includegraphics[scale=1]{figure/ucontext.png}
+\caption{更新上下文框图}\label{fig15}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{figure/ucontextdetail.pdf}
+\caption{ucontext代码详细结构}\label{fig16}
+\end{figure}
+
+\subsection{BAE模块}
+图\ref{fig14}中给出了较为细节的模块图,这里对其进行总结相互印证,给出整个BAE模块的框架图如图\ref{fig17}所示.至此硬件结构应该已经完整解释清楚,并且与代码一一对应!
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.55]{figure/BAE.pdf}
+\caption{ucontext代码详细结构}\label{fig17}
+\end{figure}
+
+\subsection{剩余部分}
+这里给出剩余部分的代码功能
+\begin{table}[H] \wuhao             %局部字体设置大小
+   \centering
+  \caption{剩余几个模块功能}\label{tab7}
+  \begin{tabular}{c|c}
+    \toprule                  %设置为顶线默认格式 加粗
+    % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+    硬件模块名 & 功能 \\
+    \hline                  %普通横线
+    $cabac\_binsort$ & 将旁路模式和常规模式的bin给分离开来 \\
+    $cabac\_ucontext$ & 更新上下文 \\
+    $cabac\_rlps4$ & 查找得到rLps \\
+    $cabac\_urange4$ & 更新range值 \\
+    $cabac\_binmix$ & 将旁路模式和常规模式的bin给合并 \\
+    $cabac\_ulow$ & 更新low值 \\
+    $cabac\_ulow\_refine$ & 移除的bit的缓冲 \\
+    $cabac\_bitpack$ & 将输出打包成1个byte输出 \\
+    \bottomrule                %设置为底线默认格式
+  \end{tabular}
+\end{table}
+
+\section{总结}
+此文档先给出软件代码与标准的对应关系方便查阅标准手册,接着给出当前版本的硬件与软件的对应关系,方便进行调试优化,更为具体的架构图见之前的ppt给出的结构.各个部分的实现逻辑具体到代码自行看代码,这里不再贴出代码.
+
+\begin{thebibliography}{99}  
+\bibitem{ref1}ITU-T Rec.H.265(02/2018) High efficiency video coding
+\end{thebibliography}
+
+\end{document}
+
