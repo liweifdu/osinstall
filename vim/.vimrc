@@ -26,7 +26,7 @@ Plugin 'mhinz/vim-signify'
 Plugin 'plasticboy/vim-markdown'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'sjl/gundo.vim'
-" Plugin 'tpope/vim-fugitive'
+Plugin 'tpope/vim-fugitive'
 " Plugin 'tpope/vim-sleuth'
 " Plugin 'tpope/vim-surround'
 " Plugin 'tyru/open-browser.vim'
@@ -192,7 +192,7 @@ let g:NERDTreeShowLineNumbers=1
 let g:NERDSpaceDelims=1
 
 " Gundo settings
-" nnoremap <leader>h :GundoToggle<CR>
+nnoremap <leader>h :GundoToggle<CR>
 
 " Snips settings
 " Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
