@@ -34,6 +34,7 @@ Plugin 'tpope/vim-fugitive'
 Plugin 'scrooloose/nerdtree'
 
 " Color schemes
+Plugin 'flazz/vim-colorschemes'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -74,7 +75,8 @@ nnoremap <silent> <F2> :TagbarToggle<CR>
 nnoremap <silent> <F3> :NERDTreeToggle<CR>
 
 " vmap the keyboard
-vmap <C-c> "+y
+vmap <leader>y "+y
+vmap <leader>p "+p
 
 " remap the gf
 nnoremap gf <C-W>gf
