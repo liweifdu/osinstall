@@ -104,6 +104,11 @@ set foldenable
 set cursorline
 set cursorcolumn
 
+" other settings
+set guioptions-=m
+set guioptions-=T
+colorscheme solarized8_dark
+
 """""""""""""""""""""""""""""""""new file""""""""""""""""""""""""""""""""""""""""""""
 """"""""""""""""""""""""""""""""some information"""""""""""""""""""""""""""""""""""""
 " auto add the file title
