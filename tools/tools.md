@@ -1,5 +1,3 @@
-## readme
-vscode markdown preview is very usefull
-
-## sphinx
-sudo apt-get install python3-sphinx
+## some software  
+*sudo apt install python3-sphinx*
+*sudo apt install octave*

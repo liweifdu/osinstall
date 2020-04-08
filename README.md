@@ -14,3 +14,4 @@ The template of chinese latex
 
 ## tools
 The tools used in template
+Some usefull scripts
