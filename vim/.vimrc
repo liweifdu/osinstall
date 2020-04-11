@@ -24,8 +24,8 @@ Plugin 'honza/vim-snippets'
 Plugin 'majutsushi/tagbar'
 Plugin 'mhinz/vim-signify'
 Plugin 'plasticboy/vim-markdown'
-Plugin 'scrooloose/nerdcommenter'
-Plugin 'sjl/gundo.vim'
+"Plugin 'scrooloose/nerdcommenter'
+"Plugin 'sjl/gundo.vim'
 Plugin 'tpope/vim-fugitive'
 " Plugin 'tpope/vim-sleuth'
 " Plugin 'tpope/vim-surround'
@@ -34,7 +34,7 @@ Plugin 'tpope/vim-fugitive'
 Plugin 'scrooloose/nerdtree'
 
 " Color schemes
-Plugin 'flazz/vim-colorschemes'
+" Plugin 'flazz/vim-colorschemes'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -105,9 +105,9 @@ set cursorline
 set cursorcolumn
 
 " other settings
-set guioptions-=m
-set guioptions-=T
-colorscheme solarized8_dark
+" set guioptions-=m
+" set guioptions-=T
+" colorscheme solarized8_dark
 
 """""""""""""""""""""""""""""""""new file""""""""""""""""""""""""""""""""""""""""""""
 """"""""""""""""""""""""""""""""some information"""""""""""""""""""""""""""""""""""""
@@ -196,10 +196,10 @@ let g:NERDTreeShowLineNumbers=1
 " let g:ctrlp_follow_symlinks=1
 
 " NerdComment settings
-let g:NERDSpaceDelims=1
+" let g:NERDSpaceDelims=1
 
 " Gundo settings
-nnoremap <leader>h :GundoToggle<CR>
+" nnoremap <leader>h :GundoToggle<CR>
 
 " Snips settings
 " Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
