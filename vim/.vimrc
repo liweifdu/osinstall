@@ -101,8 +101,8 @@ set foldlevel=3
 set foldenable
 
 " cursor
-set cursorline
-set cursorcolumn
+" set cursorline
+" set cursorcolumn
 
 " other settings
 " set guioptions-=m
@@ -167,6 +167,21 @@ func SetTitle()
     autocmd BufNewFile * normal G
 endfunc
 """"""""""""""""""""""""""""""""""end newfile""""""""""""""""""""""""""""""""""""""""
+
+" Delete trailing space
+function! DelTrailingSpace()
+    silent! %s/\s\+$//
+    normal G
+    if empty(getline('.'))
+        let line = search('\S', 'bW')
+        if line != 0
+            normal jdG
+        else
+            normal dgg
+        endif
+    endif
+endfunction
+au BufWritePre * call DelTrailingSpace()
 
 " CTags settings
 let g:tagbar_ctags_bin = 'ctags'
