@@ -76,6 +76,7 @@ nnoremap <silent> <F3> :NERDTreeToggle<CR>
 
 " map for terminal debug, enable when vim's 
 " version is greater than v8.1
+nnoremap <F4> :terminal ++rows=10<CR><c-w>x
 nnoremap <F5> :Continue<CR>
 nnoremap <S-F5> :Stop<CR>
 nnoremap <F9> :Break<CR>
