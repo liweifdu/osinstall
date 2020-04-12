@@ -74,6 +74,15 @@ map <F12> gg=G
 nnoremap <silent> <F2> :TagbarToggle<CR>
 nnoremap <silent> <F3> :NERDTreeToggle<CR>
 
+" map for terminal debug, enable when vim's 
+" version is greater than v8.1
+nnoremap <F5> :Continue<CR>
+nnoremap <S-F5> :Stop<CR>
+nnoremap <F9> :Break<CR>
+nnoremap <S-F9> :Clear<CR>
+nnoremap <F10> :Over<CR>
+nnoremap <F11> :Step<CR>
+
 " vmap the keyboard
 vmap <leader>y "+y
 vmap <leader>p "+p
@@ -112,7 +121,7 @@ set foldenable
 """""""""""""""""""""""""""""""""new file""""""""""""""""""""""""""""""""""""""""""""
 """"""""""""""""""""""""""""""""some information"""""""""""""""""""""""""""""""""""""
 " auto add the file title
-func SetCommentC()        
+func SetCommentC()
     call setline(1, "/*************************************************************************")
     call append(line("."), "    > File Name: ".expand("%"))
     call append(line(".")+1, "    > Author: WeiLi")
@@ -123,7 +132,7 @@ func SetCommentC()
     call append(line(".")+6, "")
 endfunc
 
-func SetCommentShAndMake() 
+func SetCommentShAndMake()
     call setline(1, "\#########################################################################")
     call setline(2, "\# File Name: ".expand("%"))
     call setline(3, "\# Author: WeiLi")
@@ -169,19 +178,19 @@ endfunc
 """"""""""""""""""""""""""""""""""end newfile""""""""""""""""""""""""""""""""""""""""
 
 " Delete trailing space
-function! DelTrailingSpace()
-    silent! %s/\s\+$//
-    normal G
-    if empty(getline('.'))
-        let line = search('\S', 'bW')
-        if line != 0
-            normal jdG
-        else
-            normal dgg
-        endif
-    endif
-endfunction
-au BufWritePre * call DelTrailingSpace()
+" function! DelTrailingSpace()
+"     silent! %s/\s\+$//
+"     normal G
+"     if empty(getline('.'))
+"         let line = search('\S', 'bW')
+"         if line != 0
+"             normal jdG
+"         else
+"             normal dgg
+"         endif
+"     endif
+" endfunction
+" au BufWritePre * call DelTrailingSpace()
 
 " CTags settings
 let g:tagbar_ctags_bin = 'ctags'
