@@ -1,3 +1,7 @@
+#!/usr/bin/python3
+
+import sys
+import getopt
 from numpy import *
 
 def readYuvFile(filename,width,height,frame):
@@ -84,7 +88,7 @@ def DmpYuvFile(src, tgt, ctu_num_x, ctu_num_y, width, height, frame):
     
 
 
-def YuvDifCore(src,tgt,width,height,frame):
+def YuvDifCore(src,tgt,width,height,frame, ctu_num_x, ctu_num_y):
     for i in range(frame):
         for m in range(ctu_num_y):
             for n in range(ctu_num_x):
@@ -113,14 +117,41 @@ def YuvDifCore(src,tgt,width,height,frame):
                                 print("rec pixel is", src[2][i][m*16+j][n*16+k], "decode pixel is", tgt[2][i][m*16+j][n*16+k])
                                 return
     
-if __name__=='__main__':
-    width = 1920
-    height = 1080
-    frame = 4
+def main(argv):
+    width = 416
+    height = 240
+    frame = 2
+    target = "release"
+    
+    try:
+        opts, args = getopt.getopt(argv, "Hw:h:f:t:", ["Help", "width=", "height=", "frame=", "target="])
+    except getopt.GetoptError:
+        print('Error: show_diff.py -H -w <width> -h <height> -f <frame> -t <target>')
+        print('Or: show_diff.py --Help --width=<width> --height=<height> --frame=<frame> --target=<target>')
+        sys.exit(2)
+    
+    for opt, arg in opts:
+        if opt in ("-H", "--Help"):
+            print('show_diff.py -w <width> -h <height> -f <frame> -t <target>')
+            print('Or: show_diff.py --Help --width=<width> --height=<height> --frame=<frame> --target=<target>')
+            sys.exit()
+        elif opt in ("-w", "--width"):
+            width = int(arg)
+        elif opt in ("-h", "--height"):
+            height = int(arg)
+        elif opt in ("-f", "--frame"):
+            frame = int(arg)
+        elif opt in ("-t", "--target"):
+            target = arg
+    
     ctu_num_x = width//32
     ctu_num_y = height//32
-    rec = readYuvFile('./dump/f265.yuv', width, height, frame)
-    decode = readYuvFile('./dump/f265.tmp.yuv', width, height, frame)
-    DmpYuvFile(rec, decode, ctu_num_x, ctu_num_y, width, height, frame)
+    rec = readYuvFile('./dump'+'_'+ target +'/f265.yuv', width, height, frame)
+    decode = readYuvFile('./dump'+'_'+ target +'/f265.tmp.yuv', width, height, frame)
+    #DmpYuvFile(rec, decode, ctu_num_x, ctu_num_y, width, height, frame)
                 
-    YuvDifCore(rec, decode, width, height, frame)
+    YuvDifCore(rec, decode, width, height, frame, ctu_num_x, ctu_num_y)
+
+
+if __name__=='__main__':
+    main(sys.argv[1:])
