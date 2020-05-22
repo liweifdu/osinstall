@@ -34,7 +34,7 @@ Plugin 'tpope/vim-fugitive'
 Plugin 'scrooloose/nerdtree'
 
 " Color schemes
-" Plugin 'flazz/vim-colorschemes'
+Plugin 'tomasiser/vim-code-dark'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -117,7 +117,7 @@ set foldenable
 " other settings
 " set guioptions-=m
 " set guioptions-=T
-" colorscheme solarized8_dark
+colorscheme codedark
 
 """""""""""""""""""""""""""""""""new file""""""""""""""""""""""""""""""""""""""""""""
 """"""""""""""""""""""""""""""""some information"""""""""""""""""""""""""""""""""""""
