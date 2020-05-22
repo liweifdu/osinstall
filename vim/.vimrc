@@ -34,6 +34,7 @@ Plugin 'tpope/vim-fugitive'
 Plugin 'scrooloose/nerdtree'
 
 " Color schemes
+Plugin 'octol/vim-cpp-enhanced-highlight'
 Plugin 'tomasiser/vim-code-dark'
 
 " All of your Plugins must be added before the following line
@@ -111,12 +112,12 @@ set foldlevel=3
 set foldenable
 
 " cursor
-" set cursorline
-" set cursorcolumn
+set cursorline
+set cursorcolumn
 
 " other settings
 " set guioptions-=m
-" set guioptions-=T
+set guioptions-=T
 colorscheme codedark
 
 """""""""""""""""""""""""""""""""new file""""""""""""""""""""""""""""""""""""""""""""
@@ -234,3 +235,11 @@ let g:UltiSnipsJumpBackwardTrigger="<c-z>"
 
 " If you want :UltiSnipsEdit to split your window.
 let g:UltiSnipsEditSplit="vertical"
+
+" CPP color setting
+let g:cpp_class_scope_highlight = 1
+let g:cpp_member_variable_highlight = 1
+let g:cpp_class_decl_highlight = 1
+let g:cpp_posix_standard = 1
+let g:cpp_experimental_template_highlight = 1
+let g:cpp_concepts_highlight = 1
