@@ -115,6 +115,15 @@ set foldenable
 set cursorline
 set cursorcolumn
 
+" diff
+set diffopt+=iwhite
+
+" tab and trai
+set listchars=tab:>-,trail:-
+
+" command completeted
+set wildmode=longest,list
+
 " other settings
 " set guioptions-=m
 set guioptions-=T
