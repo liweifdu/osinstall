@@ -13,25 +13,25 @@ Plugin 'VundleVim/Vundle.vim'
 
 " Plugin 'Valloric/YouCompleteMe'
 " Plugin 'scrooloose/syntastic'
-" Plugin 'bling/vim-airline'
-Plugin 'SirVer/ultisnips'
-" Plugin 'edsono/vim-matchit'
+Plugin 'bling/vim-airline'
+" Plugin 'SirVer/ultisnips'
+Plugin 'edsono/vim-matchit'
 " Plugin 'elzr/vim-json'
-Plugin 'honza/vim-snippets'
+" Plugin 'honza/vim-snippets'
 " Plugin 'justinmk/vim-sneak'
 " Plugin 'kien/ctrlp.vim'
 " Plugin 'ludovicchabant/vim-lawrencium'
-Plugin 'majutsushi/tagbar'
+" Plugin 'majutsushi/tagbar'
 Plugin 'mhinz/vim-signify'
 Plugin 'plasticboy/vim-markdown'
-"Plugin 'scrooloose/nerdcommenter'
-"Plugin 'sjl/gundo.vim'
-Plugin 'tpope/vim-fugitive'
+" Plugin 'scrooloose/nerdcommenter'
+" Plugin 'sjl/gundo.vim'
+" Plugin 'tpope/vim-fugitive'
 " Plugin 'tpope/vim-sleuth'
 " Plugin 'tpope/vim-surround'
 " Plugin 'tyru/open-browser.vim'
 " Plugin 'vim-scripts/a.vim'
-Plugin 'scrooloose/nerdtree'
+" Plugin 'scrooloose/nerdtree'
 
 " Color schemes
 Plugin 'octol/vim-cpp-enhanced-highlight'
@@ -72,8 +72,6 @@ set ruler
 " map the keyboard
 map <C-A> ggVG
 map <F12> gg=G
-nnoremap <silent> <F2> :TagbarToggle<CR>
-nnoremap <silent> <F3> :NERDTreeToggle<CR>
 
 " map for terminal debug, enable when vim's 
 " version is greater than v8.1
@@ -89,9 +87,7 @@ nnoremap <F11> :Step<CR>
 vmap <leader>y "+y
 vmap <leader>p "+p
 
-" remap the gf
-nnoremap gf <C-W>gf
-vnoremap gf <C-W>gf
+" remap the upcase
 inoremap <C-u> <esc>gUiwea
 
 " close bell
@@ -107,7 +103,7 @@ autocmd BufRead,BufNewFile *.v iabbrev alw always @(posedge clk or negedge rstn)
 
 " fold settings
 set foldcolumn=0
-set foldmethod=marker
+set foldmethod=indent
 set foldlevel=3
 set foldenable
 
@@ -115,19 +111,15 @@ set foldenable
 set cursorline
 set cursorcolumn
 
+" other settings
 " diff
 set diffopt+=iwhite
-
-" tab and trai
-set listchars=tab:>-,trail:-
-
-" command completeted
 set wildmode=longest,list
 
-" other settings
 " set guioptions-=m
 set guioptions-=T
 colorscheme codedark
+
 
 """""""""""""""""""""""""""""""""new file""""""""""""""""""""""""""""""""""""""""""""
 """"""""""""""""""""""""""""""""some information"""""""""""""""""""""""""""""""""""""
@@ -153,7 +145,7 @@ func SetCommentShAndMake()
     call setline(7, "\#########################################################################")
 endfunc
 
-autocmd BufNewFile *.cpp,*.[ch],*.sh,*.pl,*.java,*.v,makefile exec ":call SetTitle()"
+autocmd BufNewFile *.cpp,*.[ch],*.sh,*.pl,*.java,*.v,*.sv,makefile exec ":call SetTitle()"
 func SetTitle()
     if &filetype == 'sh'
         call SetCommentShAndMake()
@@ -161,9 +153,8 @@ func SetTitle()
         call setline(9,"")
 
     elseif &filetype == 'perl'
-        call SetCommentShAndMake()
-        call setline(8,"\#!/usr/bin/perl")
-        call setline(9,"")
+        call setline(1,"\#!/usr/bin/perl")
+        call setline(2,"")
 
     elseif &filetype == 'make'
         call SetCommentShAndMake()
@@ -187,72 +178,6 @@ func SetTitle()
     autocmd BufNewFile * normal G
 endfunc
 """"""""""""""""""""""""""""""""""end newfile""""""""""""""""""""""""""""""""""""""""
-
-" Delete trailing space
-" function! DelTrailingSpace()
-"     silent! %s/\s\+$//
-"     normal G
-"     if empty(getline('.'))
-"         let line = search('\S', 'bW')
-"         if line != 0
-"             normal jdG
-"         else
-"             normal dgg
-"         endif
-"     endif
-" endfunction
-" au BufWritePre * call DelTrailingSpace()
-
-" CTags settings
-let g:tagbar_ctags_bin = 'ctags'
-let g:tagbar_left = 1
-let g:tagbar_width = 30
-
-" nerdtree settings
-let g:NERDTreeDirArrowExpandable = '+'
-let g:NERDTreeDirArrowCollapsible = '-'
-let g:NERDTreeWinPos='left'
-let g:NERDTreeSize=30
-let g:NERDTreeShowLineNumbers=1
-
-" CtrlP settings
-" let g:ctrlp_map = '<leader>p'
-" let g:ctrlp_cmd = 'CtrlP'
-" map <leader>f :CtrlPMRU<CR>
-" let g:ctrlp_custom_ignore = {
-"     \ 'dir':  '\v[\/]\.(git|hg|svn|rvm)$',
-"     \ 'file': '\v\.(exe|so|dll|zip|tar|tar.gz|pyc)$',
-"     \ }
-" let g:ctrlp_working_path_mode=0
-" let g:ctrlp_match_window_bottom=1
-" let g:ctrlp_max_height=15
-" let g:ctrlp_match_window_reversed=0
-" let g:ctrlp_mruf_max=500
-" let g:ctrlp_follow_symlinks=1
-
-" NerdComment settings
-" let g:NERDSpaceDelims=1
-
-" Gundo settings
-" nnoremap <leader>h :GundoToggle<CR>
-
-" Snips settings
-" Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
-let g:UltiSnipsExpandTrigger="<tab>"
-let g:UltiSnipsJumpForwardTrigger="<c-b>"
-let g:UltiSnipsJumpBackwardTrigger="<c-z>"
-
-" If you want :UltiSnipsEdit to split your window.
-let g:UltiSnipsEditSplit="vertical"
-
-" CPP color setting
-" let g:cpp_class_scope_highlight = 1
-" let g:cpp_member_variable_highlight = 1
-" let g:cpp_class_decl_highlight = 1
-" let g:cpp_posix_standard = 1
-" let g:cpp_experimental_template_highlight = 1
-" let g:cpp_concepts_highlight = 1
-
 " for windows terminal cursor shape setting
 let &t_SI.="\e[5 q"
 let &t_SR.="\e[4 q"
